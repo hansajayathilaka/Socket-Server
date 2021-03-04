@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Demo Web Sockets</title>
+    <link rel="shortcut icon" type="image/jpg" href="favicon.ico"/>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="main.js"></script>
+</head>
+<body>
+
+<h1>Welcome to websocket demo</h1>
+<form>
+    <div>
+        <input type="text" id="token" placeholder="Enter Token" /><br/>
+        <input type="text" id="myEmail" placeholder="My Email" /><br/>
+        <button onclick="wsInit(event)">Initialize</button>
+    </div>
+    <div>
+        <input type="text" id="otherEmail" placeholder="Other Email" /><br/>
+        <button onclick="wsNotify(event)">Send Notification</button>
+    </div>
+</form>
+
+</body>
+</html>
