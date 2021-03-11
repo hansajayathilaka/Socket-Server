@@ -1,9 +1,10 @@
 import * as dotenv from 'dotenv';
 import path from 'path';
-import express from 'express';
+import express, { Request, Response } from 'express';
 import http from 'http';
 import socket  from 'socket.io';
 import * as jwt from 'jsonwebtoken';
+import cors from 'cors';
 import {Users} from "./utils/Users";
 import {Socket, TokenData, TelehealthNotificationPayload} from "types";
 import logger from './utils/Logger';
@@ -11,23 +12,35 @@ import morganMiddleware from './utils/MorganMiddleware'
 
 logger.info('Starting server');
 dotenv.config();
-const publicPath = path.join(__dirname, '..', 'public');
+// const publicPath = path.join(__dirname, '..', 'public');
 const port = process.env.PORT! || 3000;
 
 let app = express();
 let server = http.createServer(app);
 // @ts-ignore
-let io = socket(server);
+let io = socket(server, {
+    cors: {
+        origin: "https://devs.remedy.pro",
+        methods: ["GET", "POST"],
+        credentials: true
+    }
+});
+
+// const corsOptions = {
+//     origin: '*',
+//     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+// }
+// app.use(cors());
 
 // app.use(morgan('dev'));
 app.use(morganMiddleware);
-app.use(express.static(publicPath));
+// app.use('/static', express.static(publicPath));
 
-app.get('/*', (req, res) => {
-    res.sendFile(publicPath + '/../src/public/index.html');
-});
+// app.get('/*', (req: Request, res: Response): void => {
+//     console.log(req.url);
+//     res.sendFile('index.html');
+// });
 
-// const Users = new Map();
 const users: Users = new Users();
 
 io.use((socket: Socket, next: any) => {

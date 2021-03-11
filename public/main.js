@@ -4,7 +4,7 @@ function wsInit(e) {
     e.preventDefault();
     debugger;
     if (socket) socket.disconnect();
-    socket = io.connect('http://localhost:3000', {
+    socket = io.connect('http://localhost/socket/', {
         query: {
             email: myEmail.value,
         },
