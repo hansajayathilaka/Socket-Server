@@ -2,7 +2,8 @@ import { Socket as SocketType } from "socket.io";
 
 
 export interface TokenData {
-    email: string;
+    user_id: string;
+    exp: number;
 }
 
 export interface Socket extends Omit<SocketType, 'handshake'> {

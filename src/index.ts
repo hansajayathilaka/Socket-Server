@@ -41,18 +41,18 @@ io.use((socket: Socket, next: any) => {
             // TODO: Change Algorithm to RS256 (Asymmetric Encryption)
             const decodedTokenString: object | string = jwt.verify(token, process.env.JWT_KEY || "Token", {algorithms: ['HS256']});
             if (typeof decodedTokenString == "string") {
-                decodedToken = JSON.parse(decodedTokenString);
+                decodedToken = <TokenData>JSON.parse(decodedTokenString);
             } else {
                 decodedToken = <TokenData>decodedTokenString;
             }
 
             console.log(decodedToken);
-            if (decodedToken.email === email) {
+            if (decodedToken.user_id === email) {
                 socket.email = email;
                 logger.info(`New secured connection from ${email}`);
                 next();
             } else {
-                logger.warn(`Invalid email from ${email}, ${decodedToken.email}.`);
+                logger.warn(`Invalid email from ${email}, ${decodedToken.user_id}.`);
                 // socket.disconnect(true);
                 next(Error('Authentication error'));
             }
