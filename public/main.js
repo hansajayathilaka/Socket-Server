@@ -1,18 +1,16 @@
 let socket = null;
 
-function wsInit(e) {
-    e.preventDefault();
+function wsInit() {
     debugger;
     if (socket) socket.disconnect();
-    socket = io.connect('http://localhost/socket/', {
+    socket = io.connect('http://localhost:3000', {
         query: {
-            email: myEmail.value,
+            email: idMyEmail.value,
         },
         auth: {
-            token: token.value,
+            token: idToken.value,
         }
     });
-
 
     // This will not fire on socket is disconnected by server.
     socket.on("connect_error", () => {
@@ -34,17 +32,26 @@ function wsInit(e) {
     });
 }
 
-function wsNotify(e) {
-    e.preventDefault();
+function wsNotify() {
     const payload = {
-        to: otherEmail.value,
-        from: myEmail.value,
+        to: idOtherEmail.value,
+        from: idMyEmail.value,
         message: {
             a: 2
-        }
+        },
+        token: token
     }
     socket.emit("notification:telehealth", payload, (temp) => {
         console.log(temp);
     });
-    // socket.emit("notify", "asdf")
+}
+
+function Initialization(e){
+    e.preventDefault();
+    wsInit();
+}
+
+function SendNotification(e){
+    e.preventDefault();
+    wsNotify()
 }

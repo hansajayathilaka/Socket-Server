@@ -4,15 +4,15 @@ import express, { Request, Response } from 'express';
 import http from 'http';
 import socket  from 'socket.io';
 import * as jwt from 'jsonwebtoken';
-import cors from 'cors';
 import {Users} from "./utils/Users";
 import {Socket, TokenData, TelehealthNotificationPayload} from "types";
 import logger from './utils/Logger';
 import morganMiddleware from './utils/MorganMiddleware'
+import {sendFCM} from "./utils/Firebase";
 
 logger.info('Starting server');
 dotenv.config();
-// const publicPath = path.join(__dirname, '..', 'public');
+const publicPath = path.join(__dirname, '..', 'public');
 const port = process.env.PORT! || 3000;
 
 let app = express();
@@ -20,26 +20,25 @@ let server = http.createServer(app);
 // @ts-ignore
 let io = socket(server, {
     cors: {
-        origin: "https://devs.remedy.pro",
+        origin: process.env.FRONT_END_URL,
         methods: ["GET", "POST"],
         credentials: true
     }
 });
 
-// const corsOptions = {
-//     origin: '*',
-//     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-// }
-// app.use(cors());
-
+// Morgan Logging
 // app.use(morgan('dev'));
 app.use(morganMiddleware);
-// app.use('/static', express.static(publicPath));
 
-// app.get('/*', (req: Request, res: Response): void => {
-//     console.log(req.url);
-//     res.sendFile('index.html');
-// });
+app.use('/static', express.static(publicPath));
+app.get('/firebase-messaging-sw.js', (req: Request, res: Response): void => {
+    console.log(req.url);
+    res.sendFile('firebase-messaging-sw.js', { root: publicPath });
+});
+app.get('/*', (req: Request, res: Response): void => {
+    console.log(req.url);
+    res.sendFile('index.html', { root: publicPath });
+});
 
 const users: Users = new Users();
 
@@ -95,6 +94,7 @@ io.on('connection', (socket: Socket) => {
 
     socket.on('notification:telehealth', (payload: TelehealthNotificationPayload, cb: (arg0: any) => void) => {
         socket.to(payload.to).emit('notification:telehealth', payload);
+        sendFCM([payload.token], 'Title', 'Body');
         cb('ok');
     });
 

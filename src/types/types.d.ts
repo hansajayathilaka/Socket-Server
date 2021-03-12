@@ -21,4 +21,5 @@ export interface TelehealthNotificationPayload {
     to: string;
     from: string;
     message: any;
+    token: string;
 }

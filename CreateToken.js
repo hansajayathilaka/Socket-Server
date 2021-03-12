@@ -11,7 +11,7 @@ dotenv.config();
 * */
 
 const secret = process.argv[3] ? process.argv[3] : process.env.JWT_KEY;
-const data = { email: process.argv[2] ? process.argv[2] : promptSync('Enter Email > ') };
+const data = { user_id: process.argv[2] ? process.argv[2] : promptSync('Enter Email > ') };
 const exp = process.argv[4] ? parseInt(eval(process.argv[4])) : 600
 const token = jwt.sign(data, secret, { expiresIn: exp });
 
